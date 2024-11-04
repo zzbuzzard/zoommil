@@ -4,17 +4,17 @@ channels:
   - https://conda.anaconda.org/nvidia
   - https://conda.anaconda.org/conda-forge
 dependencies:
-    - python==3.7
-    - tensorboard>=2.0.0
-    - scikit-learn>=1.0
-    - pandas>=1.3.3
-    - tqdm
-    - matplotlib>=3.1.1
-    - seaborn
-    - pillow
+    - python==3.10
     - pip
     - pip:
+        - tqdm
+        - scikit-learn>=1.0
+        - pandas>=1.3.3
+        - seaborn
+        - numpy<2.0.0
+        - matplotlib>=3.1.1
+        - pillow
+        - tensorboard>=2.0.0
         - h5py>=2.9.0
         - opencv-python>=4.5.3.56
         - scikit-image>=0.18.3
-        - dgl==0.4.3.post2

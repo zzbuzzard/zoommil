@@ -1,6 +1,8 @@
 import importlib
 import numpy as np
 from sklearn.metrics import accuracy_score, f1_score, cohen_kappa_score, confusion_matrix
+from sksurv.metrics import concordance_index_censored
+import torch
 
 def calculate_error(Y_hat, Y):
     error = 1. - Y_hat.float().eq(Y.float()).float().mean().item()
@@ -29,9 +31,9 @@ class TBLogger(object):
         for k, v in metric_dict.items():
             self.tb_logger.add_scalar(k, v, step)
 
-class MetricLogger(object):
+class MetricLoggerClassification(object):
     def __init__(self):
-        super(MetricLogger, self).__init__()
+        super(MetricLoggerClassification, self).__init__()
         self.y_pred = []
         self.y_true = []
 
@@ -63,6 +65,39 @@ class MetricLogger(object):
         cf_matrix = confusion_matrix(np.array(self.y_true), np.array(self.y_pred)) # confusion matrix
         return cf_matrix
 
+
+class MetricLoggerSurvival(object):
+    """Tracks stats for c-index."""
+    def __init__(self):
+        super(MetricLoggerSurvival, self).__init__()
+        self.all_censorships = []
+        self.all_event_times = []
+        self.all_risk_scores = []
+
+    def log(self, survival, censors, hazards):
+        # Track stats for c-index
+        survival_pred = torch.cumprod(1 - hazards, dim=1)
+        risk_pred = -torch.sum(survival_pred, dim=1)
+        self.all_censorships.append(censors.detach().cpu().numpy())
+        self.all_event_times.append(survival.detach().cpu().numpy())
+        self.all_risk_scores.append(risk_pred.detach().cpu().numpy())
+
+    def get_summary(self):
+        all_censorships = (1 - np.concatenate(self.all_censorships)).astype(np.bool_)
+        all_event_times = np.concatenate(self.all_event_times)
+        all_risk_scores = np.concatenate(self.all_risk_scores)
+
+        if np.sum(all_censorships).item() <= 1:
+            print("Warning: all events censored")
+            c_index = 0.5
+        else:
+            c_index = concordance_index_censored(all_censorships, all_event_times, all_risk_scores)[0]
+
+        print('*** Metrics ***')
+        print('* C-index: {}'.format(c_index))
+
+        summary = {'c-index': c_index}
+        return summary
 
 
 
