@@ -5,8 +5,9 @@
     "lr": 1e-4,
     "scheduler_decay_rate": 0.8,
     "scheduler_patience": 5,
-    "data_path": "/home/zzb20/tcga/tcga/wsi/brca_zzb20_uni",
-    "csv_path": "/home/zzb20/tcga/tcga/omic/tcga_brca_all_clean.csv.zip",
+
+    "data_path": "/path/to/brca_uni",
+    "csv_path": "/path/to/brca_metadata.csv.zip",
     "split_path": "../../splits/survival/tcga_brca",
 
     "low_mag": "1.25x",
