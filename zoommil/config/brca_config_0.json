@@ -14,7 +14,7 @@
     "high_mag": "10.0x",
 
     "num_workers": 0,
-    "k_sample": 12,
+    "k_sample": 20,
     "k_sigma": 0.002,
     "drop_out": 0.25,
     "in_feat_dim": 1024,
