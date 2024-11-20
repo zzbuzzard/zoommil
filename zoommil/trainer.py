@@ -79,7 +79,7 @@ class Trainer(object):
 
         train_loss = 0.
 
-        for _, (data, survival_data) in enumerate(tqdm(self.train_loader)):
+        for _, (data, survival_data) in enumerate(self.train_loader):
             feats = (data[0].to(self.device), data[1].to(self.device), data[2].to(self.device))
 
             labels = survival_data["survival_bin"].to(self.device)
@@ -137,10 +137,10 @@ class Trainer(object):
 
     def train(self):
         self.model.relocate()
-        self._print_model()
+        # self._print_model()
 
         print("Start training...")
-        for epoch in range(self.max_epochs):
+        for epoch in tqdm(range(self.max_epochs)):
             train_loss = self._train_one_epoch()
             # val_loss, val_summary = self._val_one_epoch()
             # self.scheduler.step(val_loss)
@@ -152,7 +152,7 @@ class Trainer(object):
             self.tb_logger.run(func_name="log_scalars", mode="tb", metric_dict=train_summary, step=epoch)
             # self.tb_logger.run(func_name="log_scalars", mode="tb", metric_dict=val_summary, step=epoch)
 
-            if epoch % 50 == 49:
+            if epoch == 39:
                 print("Testing at epoch", epoch)
                 self.test(step=epoch)
 
